@@ -1,6 +1,8 @@
 // Copyright (c) 2015-2016, Johan Sköld.
 // License: http://opensource.org/licenses/ISC
 
+extern crate bindgen;
+
 use std::env;
 use std::io::Write;
 use std::path::PathBuf;
@@ -23,6 +25,8 @@ fn main() {
         "gnu" | "darwin" => build_gmake(bitness, &profile, platform),
         _ => panic!("Unsupported compiler"),
     }
+
+    bindgen();
 }
 
 /// Builds the bgfx binaries for `msvc` targets.
@@ -202,4 +206,23 @@ fn should_link_metal() -> bool {
     let ver = ver_str.parse::<u32>().unwrap();
 
     ver >= 101100
+}
+
+fn bindgen() {
+    let bindings = bindgen::builder()
+      .no_unstable_rust()
+      .constified_enum("bgfx_renderer_type")
+      .constified_enum("bgfx_attrib")
+      .constified_enum("bgfx_render_frame")
+      .header("bgfx/include/bgfx/c99/platform.h")
+      .clang_arg("-Ibgfx/include")
+      .clang_arg("-Ibx/include")
+      .clang_arg("-includebgfx/c99/bgfx.h")
+      .generate()
+      .expect("Unable to generate bindings");
+
+    let out_path = PathBuf::from("src/ffi_bgfx.rs");
+    bindings
+      .write_to_file(out_path)
+      .expect("Unable to write bindings");
 }
