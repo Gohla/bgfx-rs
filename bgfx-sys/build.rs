@@ -141,6 +141,19 @@ fn build_gmake(bitness: u32, profile: &str, platform: &str) {
     panic!("Failed to build bimg.");
   }
 
+  // Build tools
+  let status = Command::new("make")
+    .current_dir("bgfx")
+    .arg("shaderc")
+    .arg("geometryc")
+    .arg("texturec")
+    .status()
+    .expect("Failed to build tools");
+
+  if status.code().unwrap() != 0 {
+    panic!("Failed to build tools.");
+  }
+
   // Output linker config
   let mut path = PathBuf::from(env::current_dir().unwrap());
   path.push("bgfx");
