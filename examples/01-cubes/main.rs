@@ -5,13 +5,12 @@ extern crate bgfx;
 extern crate cgmath;
 extern crate glutin;
 extern crate time;
-
-mod common;
+extern crate examples_lib;
 
 use bgfx::*;
 use cgmath::{Angle, Decomposed, Deg, Matrix4, Point3, Quaternion, Rad, Rotation3, Transform,
              Vector3};
-use common::EventQueue;
+use examples_lib::EventQueue;
 use time::PreciseTime;
 
 
@@ -120,7 +119,7 @@ impl<'a> Cubes<'a> {
     self.ibh = Some(IndexBuffer::new(Memory::reference(self.bgfx, &CUBE_INDICES), BUFFER_NONE));
 
     // Create program from shaders.
-    self.program = Some(common::load_program(&self.bgfx, "vs_cubes", "fs_cubes"));
+    self.program = Some(examples_lib::load_program(&self.bgfx, "cube.vs.sc", "cube.fs.sc"));
 
     self.time = Some(PreciseTime::now());
   }
@@ -143,9 +142,10 @@ impl<'a> Cubes<'a> {
       // Use debug font to print information about this example.
       let frame_info = format!("Frame: {:7.3}[ms]", frame_time.num_milliseconds());
       self.bgfx.dbg_text_clear(None, None);
-      self.bgfx.dbg_text_print(0, 1, 0x4f, "examples/01-cubes.rs");
+      self.bgfx.dbg_text_print(0, 1, 0x4f, "examples/01-cubes/main.rs");
       self.bgfx.dbg_text_print(0, 2, 0x6f, "Description: Rendering simple static mesh.");
-      self.bgfx.dbg_text_print(0, 3, 0x0f, &frame_info);
+      self.bgfx.dbg_text_print(0, 3, 0x8f, &format!("Renderer: {:?}", self.bgfx.get_renderer_type()));
+      self.bgfx.dbg_text_print(0, 4, 0x0f, &frame_info);
 
       let at = Point3::new(0.0, 0.0, 0.0);
       let eye = Point3::new(0.0, 0.0, -35.0);
@@ -217,5 +217,5 @@ fn example(events: EventQueue) {
 }
 
 fn main() {
-  common::run_example(1280, 720, example);
+  examples_lib::run_example(1280, 720, example);
 }

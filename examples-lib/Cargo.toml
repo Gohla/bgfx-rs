@@ -1,0 +1,12 @@
+[package]
+name = "examples-lib"
+version = "0.1.0"
+authors = ["Johan Sköld <johan@skold.cc>"]
+
+[dependencies]
+cgmath = "0.7.0"
+glutin = "0.7.1"
+time = "0.1.33"
+
+[dependencies.bgfx]
+path = "../"

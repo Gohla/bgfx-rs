@@ -4,11 +4,10 @@
 extern crate bgfx;
 extern crate glutin;
 
-use bgfx::{Bgfx, PlatformData, RenderFrame};
+use bgfx::{Bgfx, PlatformData, RenderFrame, RendererType};
 
 use glutin::{Api, GlRequest, Window, WindowBuilder};
 
-use std;
 use std::env;
 use std::fs::File;
 use std::io::Read;
@@ -95,12 +94,22 @@ pub fn load_program<'a, 'b>(
   vsh_name: &'b str,
   fsh_name: &'b str
 ) -> bgfx::Program<'a> {
-  let renderer = bgfx.get_renderer_type();
   let exe_path = env::current_exe().unwrap();
   let exe_stem = exe_path.file_stem().unwrap();
-  let assets_path = format!("examples/assets/{}", exe_stem.to_str().unwrap());
-  let vsh_path = format!("{}/{:?}/{}.bin", assets_path, renderer, vsh_name);
-  let fsh_path = format!("{}/{:?}/{}.bin", assets_path, renderer, fsh_name);
+  let renderer_path = match bgfx.get_renderer_type() {
+    RendererType::Noop => { "dx9" } // Load shaders from somewhere, but bgfx ignores them
+    RendererType::Direct3D9 => { "dx9" }
+    RendererType::Direct3D11 => { "dx11" }
+    RendererType::Direct3D12 => { "dx11" } // Uses same shaders as dx11
+    RendererType::Metal => { "metal" }
+    RendererType::OpenGLES => { "nacl" }
+    RendererType::OpenGL => { "gl" }
+    RendererType::Vulkan => { "vulkan" }
+    _ => panic!("Unsupported renderer"),
+  };
+  let out_path = format!("examples/{}/out", exe_stem.to_str().unwrap());
+  let vsh_path = format!("{}/{}/{}.bin", out_path, renderer_path, vsh_name);
+  let fsh_path = format!("{}/{}/{}.bin", out_path, renderer_path, fsh_name);
   let vsh_mem = bgfx::Memory::copy(bgfx, &load_file(&vsh_path));
   let fsh_mem = bgfx::Memory::copy(bgfx, &load_file(&fsh_path));
   let vsh = bgfx::Shader::new(vsh_mem);

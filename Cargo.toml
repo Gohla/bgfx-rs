@@ -2,6 +2,7 @@
 name = "bgfx"
 version = "0.1.0"
 authors = ["Johan Sköld <johan@skold.cc>"]
+build = "build.rs"
 
 [dependencies]
 bitflags = "0.3.2"
@@ -13,3 +14,17 @@ path = "bgfx-sys/"
 cgmath = "0.7.0"
 glutin = "0.7.1"
 time = "0.1.33"
+
+[dev-dependencies.examples-lib]
+path = "examples-lib/"
+
+[build-dependencies]
+glob = "0.2"
+
+[[example]]
+name = "00-helloworld"
+path = "examples/00-helloworld/main.rs"
+
+[[example]]
+name = "01-cubes"
+path = "examples/01-cubes/main.rs"
