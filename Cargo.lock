@@ -51,7 +51,6 @@ name = "bgfx-sys"
 version = "0.1.0"
 dependencies = [
  "bindgen 0.25.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "libc 0.2.23 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

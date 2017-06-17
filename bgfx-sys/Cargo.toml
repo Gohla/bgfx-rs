@@ -4,8 +4,5 @@ version = "0.1.0"
 authors = ["Johan Sköld <johan@skold.cc>"]
 build = "build.rs"
 
-[dependencies]
-libc = "0.2.4"
-
 [build-dependencies]
 bindgen = "0.25.5"

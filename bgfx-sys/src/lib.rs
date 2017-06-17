@@ -7,9 +7,7 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 
-extern crate libc;
-
-pub type size_t   = ::libc::size_t;
+pub type size_t   = usize;
 pub type int32_t  = i32;
 pub type uint8_t  = u8;
 pub type uint16_t = u16;
