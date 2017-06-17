@@ -1,2 +1,5 @@
-target
-Cargo.lock
+# Cargo
+/target
+
+# IntelliJ
+/bgfx-rs.iml
