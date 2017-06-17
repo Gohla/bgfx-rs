@@ -7,14 +7,18 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 
+pub mod ffi;
+
+pub use ffi::*;
+
+//@formatter:off
+
 pub type size_t   = usize;
 pub type int32_t  = i32;
 pub type uint8_t  = u8;
 pub type uint16_t = u16;
 pub type uint32_t = u32;
 pub type uint64_t = u64;
-
-include!("ffi_bgfx.rs");
 
 pub const BGFX_PCI_ID_NONE:                 u16 = 0x0000;
 pub const BGFX_PCI_ID_SOFTWARE_RASTERIZER:  u16 = 0x0001;
@@ -40,23 +44,23 @@ pub const BGFX_CLEAR_DISCARD_DEPTH:         u16 = 0x0800;
 pub const BGFX_CLEAR_DISCARD_STENCIL:       u16 = 0x1000;
 
 pub const BGFX_CLEAR_DISCARD_COLOR_MASK:    u16 =
-    (
-        BGFX_CLEAR_DISCARD_COLOR_0 |
-        BGFX_CLEAR_DISCARD_COLOR_1 |
-        BGFX_CLEAR_DISCARD_COLOR_2 |
-        BGFX_CLEAR_DISCARD_COLOR_3 |
-        BGFX_CLEAR_DISCARD_COLOR_4 |
-        BGFX_CLEAR_DISCARD_COLOR_5 |
-        BGFX_CLEAR_DISCARD_COLOR_6 |
-        BGFX_CLEAR_DISCARD_COLOR_7
-    );
+(
+  BGFX_CLEAR_DISCARD_COLOR_0 |
+  BGFX_CLEAR_DISCARD_COLOR_1 |
+  BGFX_CLEAR_DISCARD_COLOR_2 |
+  BGFX_CLEAR_DISCARD_COLOR_3 |
+  BGFX_CLEAR_DISCARD_COLOR_4 |
+  BGFX_CLEAR_DISCARD_COLOR_5 |
+  BGFX_CLEAR_DISCARD_COLOR_6 |
+  BGFX_CLEAR_DISCARD_COLOR_7
+);
 
 pub const BGFX_CLEAR_DISCARD_MASK:          u16 =
-    (
-        BGFX_CLEAR_DISCARD_COLOR_MASK |
-        BGFX_CLEAR_DISCARD_DEPTH |
-        BGFX_CLEAR_DISCARD_STENCIL
-    );
+(
+  BGFX_CLEAR_DISCARD_COLOR_MASK |
+  BGFX_CLEAR_DISCARD_DEPTH |
+  BGFX_CLEAR_DISCARD_STENCIL
+);
 
 // Debug flags
 
@@ -111,10 +115,10 @@ pub const BGFX_BUFFER_ALLOW_RESIZE:         u16 = 0x0800;
 pub const BGFX_BUFFER_INDEX32:              u16 = 0x1000;
 
 pub const BGFX_BUFFER_COMPUTE_READ_WRITE:   u16 =
-    (
-        BGFX_BUFFER_COMPUTE_READ |
-        BGFX_BUFFER_COMPUTE_WRITE
-    );
+(
+  BGFX_BUFFER_COMPUTE_READ |
+  BGFX_BUFFER_COMPUTE_WRITE
+);
 
 // State flags
 
@@ -167,14 +171,14 @@ pub const BGFX_STATE_NONE:                  u64 = 0x0000000000000000_u64;
 pub const BGFX_STATE_MASK:                  u64 = 0xffffffffffffffff_u64;
 
 pub const BGFX_STATE_DEFAULT:               u64 =
-    (
-        BGFX_STATE_RGB_WRITE |
-        BGFX_STATE_ALPHA_WRITE |
-        BGFX_STATE_DEPTH_TEST_LESS |
-        BGFX_STATE_DEPTH_WRITE |
-        BGFX_STATE_CULL_CW |
-        BGFX_STATE_MSAA
-	);
+(
+  BGFX_STATE_RGB_WRITE |
+  BGFX_STATE_ALPHA_WRITE |
+  BGFX_STATE_DEPTH_TEST_LESS |
+  BGFX_STATE_DEPTH_WRITE |
+  BGFX_STATE_CULL_CW |
+  BGFX_STATE_MSAA
+);
 
 #[macro_export]
 macro_rules! BGFX_STATE_ALPHA_REF {
