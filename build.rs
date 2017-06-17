@@ -7,38 +7,15 @@ use std::path::Path;
 
 fn main() {
   println!("cargo:rerun-if-changed=build.rs");
-
-  // Targets based on bgfx-sys/bgfx/scripts/shader.mk
-  let vs_targets = [
-    ShaderTarget::new("vertex", "dx9", "windows", Some("vs_3_0"), Some("3")),
-    ShaderTarget::new("vertex", "dx11", "windows", Some("vs_4_0"), Some("3")),
-    ShaderTarget::new("vertex", "essl", "nacl", None, None),
-    ShaderTarget::new("vertex", "android", "android", None, None),
-    ShaderTarget::new("vertex", "gl", "linux", Some("120"), None),
-    ShaderTarget::new("vertex", "metal", "osx", Some("metal"), None),
-    // PSSL compiler is not supported
-    //ShaderTarget::new("vertex", "gles", "orbis", Some("pssl"), None),
-    ShaderTarget::new("vertex", "vulkan", "linux", Some("spirv"), None),
-  ];
-  let fs_targets = [
-    ShaderTarget::new("fragment", "dx9", "windows", Some("ps_3_0"), Some("3")),
-    ShaderTarget::new("fragment", "dx11", "windows", Some("ps_4_0"), Some("3")),
-    ShaderTarget::new("fragment", "nacl", "nacl", None, None),
-    ShaderTarget::new("fragment", "android", "android", None, None),
-    ShaderTarget::new("fragment", "gl", "linux", Some("120"), None),
-    ShaderTarget::new("fragment", "metal", "osx", Some("metal"), None),
-    // PSSL compiler is not supported
-    //ShaderTarget::new("fragment", "gles", "orbis", Some("pssl"), None),
-    ShaderTarget::new("fragment", "vulkan", "linux", Some("spirv"), None),
-  ];
-
   println!("cargo:rerun-if-changed=examples");
+
+  let (vs_targets, fs_targets) = shader_targets();
 
   compile_example_shaders("vs", &vs_targets);
   compile_example_shaders("fs", &fs_targets);
 }
 
-fn compile_example_shaders(stype: &str, targets: &[ShaderTarget]) {
+fn compile_example_shaders(stype: &str, targets: &Vec<ShaderTarget>) {
   let pattern = format!("examples/**/assets/*.{}.sc", stype);
   for entry in glob::glob(&pattern).unwrap() {
     let input_path = entry.unwrap();
@@ -83,20 +60,6 @@ fn compile_shader(input_file: &str, output_file: &str, target: &ShaderTarget) {
   println!("cargo:rerun-if-changed={}", output_file);
 }
 
-#[cfg(target_os = "windows")]
-fn shaderc_command() -> Command {
-  return Command::new("bgfx-sys/bgfx/tools/bin/windows/shaderc.exe")
-}
-
-#[cfg(target_os = "linux")]
-fn shaderc_command() -> Command {
-  return Command::new("bgfx-sys/bgfx/tools/bin/linux/shaderc")
-}
-
-#[cfg(target_os = "macos")]
-fn shaderc_command() -> Command {
-  return Command::new("bgfx-sys/bgfx/tools/bin/darwin/shaderc")
-}
 
 struct ShaderTarget {
   stype: String,
@@ -130,4 +93,64 @@ impl ShaderTarget {
       optimization: optimization,
     };
   }
+}
+
+
+#[cfg(target_os = "windows")]
+fn shaderc_command() -> Command {
+  return Command::new("bgfx-sys/bgfx/tools/bin/windows/shaderc.exe")
+}
+
+#[cfg(target_os = "linux")]
+fn shaderc_command() -> Command {
+  return Command::new("bgfx-sys/bgfx/tools/bin/linux/shaderc")
+}
+
+#[cfg(target_os = "macos")]
+fn shaderc_command() -> Command {
+  return Command::new("bgfx-sys/bgfx/tools/bin/darwin/shaderc")
+}
+
+
+fn shader_targets() -> (Vec<ShaderTarget>, Vec<ShaderTarget>) {
+  // Targets based on bgfx-sys/bgfx/scripts/shader.mk
+  let mut vs_targets: Vec<ShaderTarget> = vec![
+    ShaderTarget::new("vertex", "essl", "nacl", None, None),
+    ShaderTarget::new("vertex", "android", "android", None, None),
+    ShaderTarget::new("vertex", "gl", "linux", Some("120"), None),
+    ShaderTarget::new("vertex", "metal", "osx", Some("metal"), None),
+    ShaderTarget::new("vertex", "vulkan", "linux", Some("spirv"), None),
+  ];
+  let mut fs_targets: Vec<ShaderTarget> = vec![
+    ShaderTarget::new("fragment", "nacl", "nacl", None, None),
+    ShaderTarget::new("fragment", "android", "android", None, None),
+    ShaderTarget::new("fragment", "gl", "linux", Some("120"), None),
+    ShaderTarget::new("fragment", "metal", "osx", Some("metal"), None),
+    ShaderTarget::new("fragment", "vulkan", "linux", Some("spirv"), None),
+  ];
+
+  let (additional_vs_targets, additional_fs_targets) = additional_shader_targets();
+  vs_targets.extend(additional_vs_targets);
+  fs_targets.extend(additional_fs_targets);
+
+  return (vs_targets, fs_targets);
+}
+
+#[cfg(target_os = "windows")]
+fn additional_shader_targets() -> (Vec<ShaderTarget>, Vec<ShaderTarget>) {
+  // Targets based on bgfx-sys/bgfx/scripts/shader.mk
+  let vs_targets = vec![
+    ShaderTarget::new("vertex", "dx9", "windows", Some("vs_3_0"), Some("3")),
+    ShaderTarget::new("vertex", "dx11", "windows", Some("vs_4_0"), Some("3")),
+  ];
+  let fs_targets = vec![
+    ShaderTarget::new("fragment", "dx9", "windows", Some("ps_3_0"), Some("3")),
+    ShaderTarget::new("fragment", "dx11", "windows", Some("ps_4_0"), Some("3")),
+  ];
+  return (vs_targets, fs_targets);
+}
+
+#[cfg(not(target_os = "windows"))]
+fn additional_shader_targets() -> (Vec<ShaderTarget>, Vec<ShaderTarget>) {
+  return (vec![], vec![]);
 }
